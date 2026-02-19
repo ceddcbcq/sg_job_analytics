@@ -1,7 +1,5 @@
-# Data files
-data/raw/*.csv
+# Data files (tracked with Git LFS)
 #data/bronze/*.parquet
-data/silver/*.parquet
 #output/
 
 # Python
