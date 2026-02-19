@@ -1,8 +1,8 @@
 # Data files
-#data/raw/*.csv
-data/bronze/*.parquet
-#data/silver/*.parquet
-output/
+data/raw/*.csv
+#data/bronze/*.parquet
+data/silver/*.parquet
+#output/
 
 # Python
 __pycache__/
