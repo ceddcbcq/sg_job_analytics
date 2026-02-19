@@ -323,9 +323,9 @@ class SGJobsETL:
         """
         print("[Silver] Stage 1/3: Applying hard salary bounds...")
 
-        # Preserve raw values
-        df['salary_minimum_raw'] = df['salary_minimum']
-        df['salary_maximum_raw'] = df['salary_maximum']
+        # Preserve raw values (downcasted to float32)
+        df['salary_minimum_raw'] = df['salary_minimum'].astype('float32')
+        df['salary_maximum_raw'] = df['salary_maximum'].astype('float32')
 
         # Stage 1: Hard bounds
         floor = self.config['SALARY_FLOOR']
@@ -489,7 +489,7 @@ class SGJobsETL:
         df['is_reposted'] = df['metadata_repostCount'] > 0
 
         # Annual salary
-        df['annual_salary_clean'] = df['average_salary_clean'] * 12
+        df['annual_salary_clean'] = (df['average_salary_clean'] * 12).astype('float32')
 
         print(f"[Silver]   Experience bands: {df['experience_band'].nunique()} unique")
         print(f"[Silver]   Avg competition ratio: {df['competition_ratio'].mean():.2f} applications/vacancy")
@@ -507,29 +507,65 @@ class SGJobsETL:
 
         initial_memory = df.memory_usage(deep=True).sum() / 1024**2
 
-        # Convert low-cardinality strings to category
-        category_candidates = [
-            'employmentTypes',
-            'seniority_tier',
-            'role_family',
-            'experience_band',
-            'primary_industry',
-            'positionLevels',
-            'status_jobStatus',
-            'metadata_isPostedOnBehalf',
-        ]
+        # --- DROP only average_salary (raw uncleaned, superseded by average_salary_clean) ---
+        df = df.drop(columns=['average_salary'], errors='ignore')
 
+        # --- DOWNCAST high-cardinality object columns to string ---
+        for col in ['categories', 'title']:
+            if col in df.columns:
+                df[col] = df[col].astype(pd.StringDtype())
+
+        # --- DOWNCAST nullable Int64 → smaller unsigned ints ---
+        int_downcast = {
+            'numberOfVacancies':                    pd.UInt16Dtype(),  # [1, 999]
+            'metadata_totalNumberJobApplication':   pd.UInt16Dtype(),  # [0, 1342]
+            'metadata_totalNumberOfView':           pd.UInt16Dtype(),  # [0, 8190]
+            'minimumYearsExperience':               pd.UInt8Dtype(),   # [0, 88]
+            'metadata_repostCount':                 pd.UInt8Dtype(),   # [0, 2]
+        }
+        for col, dtype in int_downcast.items():
+            if col in df.columns:
+                df[col] = df[col].astype(dtype)
+
+        # --- DOWNCAST nullable Float64 → Float32 ---
+        if 'competition_ratio' in df.columns:
+            df['competition_ratio'] = df['competition_ratio'].astype(pd.Float32Dtype())
+
+        # --- DOWNCAST float64 salary columns → float32 ---
+        float32_cols = [
+            'salary_minimum', 'salary_maximum',
+            'salary_minimum_raw', 'salary_maximum_raw',
+            'salary_minimum_clean', 'salary_maximum_clean',
+            'average_salary_clean', 'annual_salary_clean',
+        ]
+        for col in float32_cols:
+            if col in df.columns:
+                df[col] = df[col].astype('float32')
+
+        # --- DOWNCAST non-nullable int columns ---
+        df['industry_count']        = df['industry_count'].astype('uint8')
+        df['posting_duration_days'] = df['posting_duration_days'].astype('uint8')
+        df['posting_year']          = df['posting_year'].astype('uint16')
+        df['posting_month_num']     = df['posting_month_num'].astype('uint8')
+
+        # --- Convert low-cardinality strings to category ---
+        category_candidates = [
+            'employmentTypes', 'seniority_tier', 'role_family', 'experience_band',
+            'primary_industry', 'positionLevels', 'status_jobStatus',
+            'metadata_isPostedOnBehalf', 'postedCompany_name',
+        ]
         converted_count = 0
         for col in category_candidates:
             if col in df.columns:
                 unique_ratio = df[col].nunique() / len(df)
-                if unique_ratio < 0.5:  # <50% unique values = good candidate
+                if unique_ratio < 0.5:
                     df[col] = df[col].astype('category')
                     converted_count += 1
 
-        # Convert boolean flags
-        if 'is_reposted' in df.columns:
-            df['is_reposted'] = df['is_reposted'].astype('bool')
+        # --- Convert boolean flags ---
+        for col in ['is_reposted', 'salary_outlier_iqr']:
+            if col in df.columns:
+                df[col] = df[col].astype('bool')
 
         final_memory = df.memory_usage(deep=True).sum() / 1024**2
         savings = (1 - final_memory / initial_memory) * 100
