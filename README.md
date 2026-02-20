@@ -2,22 +2,43 @@
 
 Comprehensive analytics dashboard for 1M+ Singapore job postings (Oct 2022 – Apr 2023).
 Built with Medallion architecture (Bronze → Silver → Gold) and multi-persona Streamlit dashboard.
+Preview dashboard at https://ceddcbcqdhcudd-sgjobanalytics.streamlit.app/
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.9+ (tested with Python 3.14.2)
+- Python 3.10+ (environment.yml specifies 3.10, tested with Python 3.14.2)
 - 8GB+ RAM recommended
-- Conda environment: `DSAI-1` (or create virtual environment)
+- Conda or pip
 
 ### Installation
 
-1. **Activate conda environment**
+**Option A: Using Conda (Recommended)**
+
+1. **Create conda environment from environment.yml**
    ```bash
-   conda activate DSAI-1
+   conda env create -f environment.yml
+   conda activate sg_job_analytics
+   ```
+
+2. **Navigate to project directory**
+   ```bash
    cd /path/to/sg_job_analytics
+   ```
+
+3. **Place raw data**
+   ```
+   data/raw/SGJobData.csv
+   ```
+
+**Option B: Using pip**
+
+1. **Create virtual environment**
+   ```bash
+   python -m venv sg_job_analytics_env
+   source sg_job_analytics_env/bin/activate  # On Windows: sg_job_analytics_env\Scripts\activate
    ```
 
 2. **Install dependencies**
@@ -25,10 +46,23 @@ Built with Medallion architecture (Bronze → Silver → Gold) and multi-persona
    pip install -r requirements.txt
    ```
 
-3. **Place raw data**
+3. **Navigate to project directory**
+   ```bash
+   cd /path/to/sg_job_analytics
+   ```
+
+4. **Place raw data**
    ```
    data/raw/SGJobData.csv
    ```
+
+**Option C: Update existing Conda environment**
+
+If you already have a conda environment and want to add these dependencies:
+```bash
+conda env update -f environment.yml --prune
+conda activate sg_job_analytics
+```
 
 ---
 
