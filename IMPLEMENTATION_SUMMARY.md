@@ -171,7 +171,7 @@ Six business-ready aggregate tables:
 
 **Deliverables:**
 
-**1. `app/streamlit_app.py` - Home Page**
+**1. `app/Home.py` - Home Page**
 - KPI metrics row (4 metrics: postings, vacancies, industries, date range)
 - Top 10 industries chart (horizontal bar)
 - Employment type breakdown (donut chart)
@@ -291,7 +291,7 @@ Six business-ready aggregate tables:
 - 💡 Tips & Tricks (tuning, exporting, customization)
 - 🐛 Troubleshooting (common errors + solutions)
 
-**2. `final_report.md` (Assignment Deliverable)**
+**2. `FINAL_REPORT.md` (Assignment Deliverable)**
 Following assignment_requirements.md structure:
 
 **Section 1: Business Case**
@@ -339,7 +339,7 @@ Following assignment_requirements.md structure:
 - src/etl/__init__.py
 - src/etl/config.py
 - src/etl/sg_jobs_etl.py
-- app/streamlit_app.py
+- app/Home.py
 - app/pages/1_Career_Switcher.py
 - app/pages/2_Talent_Acquisition.py
 - app/pages/3_Policy_Analyst.py
@@ -356,18 +356,15 @@ Following assignment_requirements.md structure:
 
 **Documentation (9 files):**
 - README.md
-- final_report.md
+- FINAL_REPORT.md
+- IMPLEMENTATION_SUMMARY.md
+- START_HERE.md
 - requirements.txt
 - .gitignore
-- plan_review.md
-- implementation_plan.md
-- questions.md
-- project_plan.md
-- START_HERE.md
 
 **Data Files (3 directories):**
 - data/bronze/ (1 parquet file, 49 MB)
-- data/silver/ (1 parquet file, 63 MB)
+- data/silver/ (1 parquet file, 56 MB)
 - data/gold/ (6 parquet files, ~15 MB total)
 
 ### **Code Metrics**
@@ -424,7 +421,7 @@ Following assignment_requirements.md structure:
 
 ### **Documentation Quality**
 - [x] README with setup instructions
-- [x] final_report.md for assignment submission
+- [x] FINAL_REPORT.md for assignment submission
 - [x] Inline code comments
 - [x] Notebook markdown cells explaining each step
 - [x] Dashboard help text on metrics
@@ -562,7 +559,7 @@ Following assignment_requirements.md structure:
 ✅ 3 Jupyter Notebooks (Bronze, Silver, Gold)
 ✅ 4-Page Streamlit Dashboard (Home + 3 Personas)
 ✅ Test Suite (15 unit tests)
-✅ Comprehensive Documentation (README + final_report)
+✅ Comprehensive Documentation (README + FINAL_REPORT)
 
 ### **Ready for:**
 - ✅ Assignment submission
@@ -583,7 +580,7 @@ Following assignment_requirements.md structure:
 
 **For Issues:**
 - Check README.md Troubleshooting section
-- Review final_report.md for methodology details
+- Review FINAL_REPORT.md for methodology details
 - Run `etl.pipeline_summary()` to verify data pipeline state
 
 **For Enhancements:**
@@ -592,8 +589,6 @@ Following assignment_requirements.md structure:
 - Extend Gold layer with new aggregate tables in `sg_jobs_etl.py`
 
 **For Questions:**
-- Consult `implementation_plan.md` for design rationale
-- Review `questions.md` for decision history
 - Check inline code comments for implementation details
 
 ---
